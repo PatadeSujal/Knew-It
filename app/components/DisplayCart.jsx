@@ -6,9 +6,7 @@ import Link from "next/link";
 
 const DisplayCart = () => {
   const { cartItems } = useContext(DailyItemsList);
-  useEffect(() => {
-    console.log(cartItems);
-  }, [cartItems]);
+  
 
   const { toggleCart, } = useContext(DailyItemsList);
   return (

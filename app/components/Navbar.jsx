@@ -26,10 +26,7 @@ const Navbar = () => {
     return sum + (value !== undefined ? parseFloat(value) || 0 : 0);
   }, 0);
 
-    console.log(tfLabel);
-    console.log(typeof total);
     setCartTotal(total);
-    console.log(totalNutri);
   }, [cartItems, tfLabel]);
 
   useEffect(() => {
@@ -38,7 +35,6 @@ const Navbar = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("Data ", data.products);
         setGeneralProducts(data.products);
       });
   }, [searchItems]);
@@ -66,7 +62,6 @@ const Navbar = () => {
                 className=" w-2xl hidden xl:block border-none rounded-lg  p-3 m-2 border-0 bg-[#f8f8f8]"
                 onChange={(e) => {
                   setSearchItems(e.target.value);
-                  console.log(e.target.value);
                 }}
               />
              
@@ -117,7 +112,6 @@ const Navbar = () => {
                 className=" sm:hidden border-none m-2 rounded-lg  p-2  border-0 bg-[#f8f8f8]"
                 onChange={(e) => {
                   setSearchItems(e.target.value);
-                  console.log(e.target.value);
                 }}
               />
             </Link>

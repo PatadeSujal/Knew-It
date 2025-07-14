@@ -17,7 +17,6 @@ const DisplayProducts = ({title}) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("Data ", data.products);
         setCategoryItems(data.products);
         setLoading(false);
       });

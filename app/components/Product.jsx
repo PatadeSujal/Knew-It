@@ -71,7 +71,6 @@ const Product = ({
           <div
             className="add-btn border-1 px-4 py-1 border-[#318616] flex justify-center rounded cursor-pointer"
             onClick={() => {
-              console.log("clicked");
               addItemDataToCart(item_id);
             }}
           >
@@ -82,7 +81,6 @@ const Product = ({
             className="add-btn border-1 px-4 py-1 border-[#318616] bg-[#318616] flex justify-center rounded cursor-pointer"
             onClick={() => {
               removeItemDataToCart(item_id);
-              console.log("Removed");
             }}
           >
             <button className="btn text-white text-xs  "><FiMinusCircle /></button>

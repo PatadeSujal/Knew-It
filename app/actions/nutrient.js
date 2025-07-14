@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import { DailyItemsList } from "../store/items-store";
+
 
 const nutrientThresholds = [
   {
@@ -47,11 +46,9 @@ export default function getNutrientColor(nutrientName, valuePer100g) {
   }
 }
 
-export function sumNutrient(key,arr){
-  return  arr.reduce((sum, item) => sum + (parseFloat(item[key]) || 0), 0);
+export function sumNutrient(key, arr) {
+  return arr.reduce((sum, item) => sum + (parseFloat(item[key]) || 0), 0);
 }
-
-
 
 export const getChartOptions = () => ({
   chart: {
@@ -125,48 +122,26 @@ export function calculateNutritionScore(protein, saturatedFats, sugars) {
 }
 
 export const fetchData = async (nutrientValue) => {
-  try {
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer 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", // Replace with your actual API key
+    const response = await fetch("api/groq", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages: [
+        {
+          role: "system",
+          content:
+            'You are a nutrition analysis assistant. You will receive summed nutrient values (per 100g) for a grocery item. Based on this input, perform the following tasks using your own reasoning based on standard dietary guidelines:\n\n1. Classify each nutrient as "good", "moderate", or "bad" depending on whether it is healthy, acceptable, or concerning.\n\n2. Generate short, positive comments only if any nutrients are notably good (e.g., high protein, low sugar). If no nutrient is particularly good, return "no_positives".\n\n3. Generate short, negative comments for nutrients that are in the "bad" range (e.g., high sodium, excessive sugar).\n\n4. Provide 1–3 brief and relevant health tips to improve the overall nutrition of the item. Do not copy examples — generate your own based on the nutrient data.\n\nReturn the final output strictly as a JavaScript object, not JSON. Do not use triple backticks, and do not wrap it in quotes. Example:\n\n{\n  nutrient_status: {\n    carbohydrates_100g: "moderate",\n    cholesterol_100g: "good",\n    fat_100g: "bad"\n,  },\n  positive_comments: ["Low in cholesterol"],\n  negative_comments: ["High in saturated fat"],\n  health_tips: ["Use lower-fat ingredients", "Increase fiber content with whole grains"]\n} and be a strict nutrition analyser',
         },
-        body: JSON.stringify({
-          model: "gemma2-9b-it",
-          messages: [
-            {
-              role: "system",
-              content:
-                'You are a nutrition analysis assistant. You will receive summed nutrient values (per 100g) for a grocery item. Based on this input, perform the following tasks using your own reasoning based on standard dietary guidelines:\n\n1. Classify each nutrient as "good", "moderate", or "bad" depending on whether it is healthy, acceptable, or concerning.\n\n2. Generate short, positive comments only if any nutrients are notably good (e.g., high protein, low sugar). If no nutrient is particularly good, return "no_positives".\n\n3. Generate short, negative comments for nutrients that are in the "bad" range (e.g., high sodium, excessive sugar).\n\n4. Provide 1–3 brief and relevant health tips to improve the overall nutrition of the item. Do not copy examples — generate your own based on the nutrient data.\n\nReturn the final output strictly as a JavaScript object, not JSON. Do not use triple backticks, and do not wrap it in quotes. Example:\n\n{\n  nutrient_status: {\n    carbohydrates_100g: "moderate",\n    cholesterol_100g: "good",\n    fat_100g: "bad"\n,  },\n  positive_comments: ["Low in cholesterol"],\n  negative_comments: ["High in saturated fat"],\n  health_tips: ["Use lower-fat ingredients", "Increase fiber content with whole grains"]\n} and be a strict nutrition analyser',
-            },
-            {
-              role: "user",
-              content: JSON.stringify(nutrientValue),
-            },
-          ],
-          temperature: 1,
-          max_tokens: 1024,
-          top_p: 1,
-          stream: false,
-        }),
-      }
-    );
+        {
+          role: "user",
+          content: JSON.stringify(nutrientValue),
+        },
+      ],
+    }),
+  });
+  const data = await response.json();
+  return data;
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.log(err);
-  } finally {
-    console.log("Response is commimg");
-  }
 };
 
 export const positiveStatusStyles = {

@@ -16,22 +16,21 @@ const page = () => {
   if (!cartItems) return <p>Loading...</p>;
   // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-
   const sumNestedNutrient = (key) =>
     cartItems.reduce((sum, item) => {
       const value = item.nutrients?.[key];
       return sum + (parseFloat(value) || 0);
     }, 0);
   const series = [
-    sumNutrient("protein",cartItems),
-    sumNutrient("fats",cartItems),
-    sumNutrient("sugars",cartItems)
+    sumNutrient("protein", cartItems),
+    sumNutrient("fats", cartItems),
+    sumNutrient("sugars", cartItems),
   ];
 
   const score = calculateNutritionScore(
-    sumNutrient("protein",cartItems),
-    sumNutrient("fats",cartItems),
-    sumNutrient("sugars",cartItems)
+    sumNutrient("protein", cartItems),
+    sumNutrient("fats", cartItems),
+    sumNutrient("sugars", cartItems)
   );
 
   const nutrientKeys = [
@@ -54,7 +53,7 @@ const page = () => {
     sugars: "Sugars",
     salt: "Salt",
     sodium: "Sodium",
-    saturatedFats:"Saturated Fats"
+    saturatedFats: "Saturated Fats",
   };
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
@@ -78,50 +77,47 @@ const page = () => {
     if (Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-      console.log("Nutrient Value",nutrientValue);
-
   }, [nutrientValue]);
 
   const fetchAiResponse = async () => {
     try {
-  const response = await fetchData(nutrientValue);
-  const aiContent = response.choices?.[0]?.message?.content;
+      const response = await fetchData(nutrientValue);
+      console.log("Ai content",response);
+      const aiContent = response.choices?.[0]?.message?.content;
+      const cleaned = aiContent
+        ?.replace(/```(javascript|json)?|```/g, "")
+        .trim();
 
-  // Remove triple backticks and "javascript" tag
-  const cleaned = aiContent.replace(/```(javascript|json)?|```/g, "").trim();
+      let aiObject;
 
-  let aiObject;
-
-  // First try JSON.parse (safe if response is valid JSON)
-  try {
-    aiObject = JSON.parse(cleaned);
-  } catch (jsonError) {
-    console.warn("JSON.parse failed. Attempting to fix formatting...");
-
-    // Try adding quotes around keys if they're missing
-    const fixed = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g, '$1"$2"$3');
-
-    try {
-      aiObject = JSON.parse(fixed);
-    } catch (finalError) {
-      console.error("Still couldn't parse as JSON. Falling back to eval. ⚠️");
-      
-      // Dangerous fallback: use eval as last resort
+      // Try JSON.parse directly
       try {
-        aiObject = eval("(" + cleaned + ")");
-      } catch (evalError) {
-        throw new Error("Eval also failed: " + evalError.message);
+        aiObject = JSON.parse(cleaned);
+      } catch (jsonError) {
+        // Attempt to fix unquoted keys
+        const fixed = cleaned.replace(
+          /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
+          '$1"$2"$3'
+        );
+
+        try {
+          aiObject = JSON.parse(fixed);
+        } catch (finalError) {
+          // Fallback to Function-based parsing
+          try {
+            aiObject = Function('"use strict"; return (' + cleaned + ")")();
+          } catch (evalError) {
+            throw new Error(
+              "Failed to parse AI response at all: " + evalError.message
+            );
+          }
+        }
       }
+
+      setAiResponse(aiObject);
+    } catch (error) {
+      console.error("Failed to fetch or parse AI response:", error);
     }
-  }
-
-  console.log("AI Parsed Response:", aiObject);
-  setAiResponse(aiObject);
-
-} catch (error) {
-  console.error("Failed to fetch or parse AI response:", error);
-}
-
   };
   return (
     <>
@@ -131,8 +127,6 @@ const page = () => {
         </h1>
         <section className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm  sm:w-[80%] mx-auto">
           <div>
-         
-
             {/* Apex Donut Chart */}
             <Chart
               options={getChartOptions()}
@@ -181,20 +175,19 @@ const page = () => {
                 {/* {} */}
                 {Object.entries(nutrientValue).map(([key, value]) => {
                   const status =
-                  aiResponse?.nutrient_status?.[key] || "unknown"; // fallback if missing
+                    aiResponse?.nutrient_status?.[key] || "unknown"; // fallback if missing
                   const statusStyles = positiveStatusStyles;
-                  console.log(aiResponse?.nutrient_status?.[key]);
                   // Choose color styles based on status
 
                   const { text, bg, dot, label } = statusStyles[status];
-                  console.log("Text ",key , " " ,value);
-                  // console.log(Object.entries(nutrientValue));
                   return (
                     <tr key={key} className="border-b border-gray-200">
                       <td className="py-4 pr-4 text-[#121a0f] font-medium">
-                        {key.replace("_","/")}
+                        {key.replace("_", "/")}
                       </td>
-                      <td className="py-4 pr-4 text-[#121a0f]">{value.toFixed(2)}</td>
+                      <td className="py-4 pr-4 text-[#121a0f]">
+                        {value.toFixed(2)}
+                      </td>
                       <td className="py-4 px-4">
                         <div
                           className={`flex items-center justify-center gap-2 text-sm font-medium ${text} ${bg} rounded-full px-3 py-1`}
@@ -273,7 +266,9 @@ const page = () => {
             <FaLightbulb />
           </span>
           <div>
-            <h3 className="font-extrabold text-green-900 my-2">Insight &amp; Tip</h3>
+            <h3 className="font-extrabold text-green-900 my-2">
+              Insight &amp; Tip
+            </h3>
             {aiResponse?.health_tips && aiResponse.health_tips.length > 0 ? (
               <ul className="list-disc list-inside text-green-800 text-sm space-y-1">
                 {aiResponse.health_tips.map((tip, index) => (

@@ -20,13 +20,7 @@ export const ItemListProvider = ({ children }) => {
   const [toggleCart, setToggleCart] = useState(false);
   const [tfLabel, setTfLabel] = useState("protein");
   const [generalProducts,setGeneralProducts] = useState([]);
-  // Fetch daily items on component mount
-  // useEffect(() => {
-  //   fetch("https://dummyjson.com/c/2f8d-ae93-42b9-a672")
-  //     .then((res) => res.json())
-  //     .then((data) => setDailyItems(data))
-  //     .catch((err) => console.error("Error fetching daily items:", err));
-  // }, []);
+
 
   let [cartItems, setCartItems] = useState([]);
   const addItemDataToCart = (id) => {
@@ -47,7 +41,6 @@ export const ItemListProvider = ({ children }) => {
             nutrients:product.nutriments,
           };
           setCartItems((prevItems) => [...prevItems, cartItem]);
-          console.log(cartItems);
         }
       })
       .catch((err) => console.error("Error adding item to cart:", err));
@@ -56,9 +49,8 @@ export const ItemListProvider = ({ children }) => {
   setCartItems((prevItems) => {
     const updatedItems = prevItems.filter(item => item.id !== item_id);
     if (updatedItems.length < prevItems.length) {
-      console.log("Item removed");
     } else {
-      console.log("Item not found");
+      alert("Item not found");
     }
     return updatedItems;
   });
