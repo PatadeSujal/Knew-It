@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import GeneralProducts from '../components/GeneralProducts'
 import { DailyItemsList } from '../store/items-store';
 import DisplayCart from '../components/DisplayCart';
-const page = () => {
+const Page = () => {
     const{toggleCart} = useContext(DailyItemsList);
     return (
         <div className={`w-full border-2  ${toggleCart ? " duration-150 black-overylay w-[90%] sm:w-[20%]" : ""}`} >
@@ -16,4 +16,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

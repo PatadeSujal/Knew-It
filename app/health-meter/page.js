@@ -60,7 +60,7 @@ import { sumNutrient } from "../actions/nutrient";
   
 
     // Update nutrientValue whenever cartItems change
-    useEffect(() => {
+    useEffect(() => { 
       const totals = {};
 
       nutrientKeys.forEach((key) => {
@@ -74,11 +74,12 @@ import { sumNutrient } from "../actions/nutrient";
     }, [cartItems]);
 
     // Once nutrientValue is updated and not empty, fetch AI response
-    useEffect(() => {
-      if (Object.keys(nutrientValue).length > 0) {
-        fetchAiResponse();
-      }
-    }, [nutrientValue]);
+   useEffect(() => {
+  if (Object.keys(nutrientValue).length > 0) {
+    fetchAiResponse();
+  }
+}, [nutrientValue]);
+
 
     const fetchAiResponse = async () => {
       try {
