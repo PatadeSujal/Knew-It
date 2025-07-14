@@ -18,12 +18,14 @@ import { sumNutrient } from "../actions/nutrient";
     // if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-    const sumNestedNutrient = (key) =>
+    const sumNestedNutrient = (key) =>{
+
       cartItems.reduce((sum, item) => {
         const value = item.nutrients?.[key];
         return sum + (parseFloat(value) || 0);
       }, 0);
-   
+      
+    };
 
     const nutrientKeys = [
       "carbohydrates_100g",
@@ -49,26 +51,24 @@ import { sumNutrient } from "../actions/nutrient";
     };
   
 
-    // Update nutrientValue whenever cartItems change
-    useEffect(() => { 
-      const totals = {};
+     useEffect(() => {
+    if (!cartItems || cartItems.length === 0) return;
 
-      nutrientKeys.forEach((key) => {
-        const total = sumNestedNutrient(key);
-        totals[key] = total;
-      });
+    const totals = {};
 
-      if (Object.keys(totals).length > 0) {
-        setNutrientValue(totals);
-      }
-    }, [cartItems]);
+    nutrientKeys.forEach((key) => {
+      const total = sumNestedNutrient(key);
+      totals[key] = total;
+    });
 
-    // Once nutrientValue is updated and not empty, fetch AI response
-   useEffect(() => {
-  if (Object.keys(nutrientValue).length > 0) {
-    fetchAiResponse();
-  }
-}, [nutrientValue]);
+    setNutrientValue(totals);
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (Object.keys(nutrientValue).length > 0) {
+      fetchAiResponse();
+    }
+  }, [nutrientValue]);
 
  const series = [
       sumNutrient("protein", cartItems),
