@@ -12,6 +12,8 @@ import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
   const Page = () => {
+      const [nutrientValue, setNutrientValue] = useState({});
+    const [aiResponse, setAiResponse] = useState({});
     const { cartItems } = useContext(DailyItemsList);
     if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
@@ -55,8 +57,7 @@ import { sumNutrient } from "../actions/nutrient";
       sodium: "Sodium",
       saturatedFats: "Saturated Fats",
     };
-    const [nutrientValue, setNutrientValue] = useState({});
-    const [aiResponse, setAiResponse] = useState({});
+  
 
     // Update nutrientValue whenever cartItems change
     useEffect(() => {
