@@ -23,17 +23,7 @@ import { sumNutrient } from "../actions/nutrient";
         const value = item.nutrients?.[key];
         return sum + (parseFloat(value) || 0);
       }, 0);
-    const series = [
-      sumNutrient("protein", cartItems),
-      sumNutrient("fats", cartItems),
-      sumNutrient("sugars", cartItems),
-    ];
-
-    const score = calculateNutritionScore(
-      sumNutrient("protein", cartItems),
-      sumNutrient("fats", cartItems),
-      sumNutrient("sugars", cartItems)
-    );
+   
 
     const nutrientKeys = [
       "carbohydrates_100g",
@@ -79,6 +69,18 @@ import { sumNutrient } from "../actions/nutrient";
     fetchAiResponse();
   }
 }, [nutrientValue]);
+
+ const series = [
+      sumNutrient("protein", cartItems),
+      sumNutrient("fats", cartItems),
+      sumNutrient("sugars", cartItems),
+    ];
+
+    const score = calculateNutritionScore(
+      sumNutrient("protein", cartItems),
+      sumNutrient("fats", cartItems),
+      sumNutrient("sugars", cartItems)
+    );
 
 
     const fetchAiResponse = async () => {
