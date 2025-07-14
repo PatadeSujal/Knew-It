@@ -15,7 +15,7 @@ import { sumNutrient } from "../actions/nutrient";
       const [nutrientValue, setNutrientValue] = useState({});
     const [aiResponse, setAiResponse] = useState({});
     const { cartItems } = useContext(DailyItemsList);
-    if (!cartItems) return <p>Loading...</p>;
+    // if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
     const sumNestedNutrient = (key) =>
