@@ -11,114 +11,114 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
-const page = () => {
-  const { cartItems } = useContext(DailyItemsList);
-  if (!cartItems) return <p>Loading...</p>;
-  // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
+  const Page = () => {
+    const { cartItems } = useContext(DailyItemsList);
+    if (!cartItems) return <p>Loading...</p>;
+    // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-  const sumNestedNutrient = (key) =>
-    cartItems.reduce((sum, item) => {
-      const value = item.nutrients?.[key];
-      return sum + (parseFloat(value) || 0);
-    }, 0);
-  const series = [
-    sumNutrient("protein", cartItems),
-    sumNutrient("fats", cartItems),
-    sumNutrient("sugars", cartItems),
-  ];
+    const sumNestedNutrient = (key) =>
+      cartItems.reduce((sum, item) => {
+        const value = item.nutrients?.[key];
+        return sum + (parseFloat(value) || 0);
+      }, 0);
+    const series = [
+      sumNutrient("protein", cartItems),
+      sumNutrient("fats", cartItems),
+      sumNutrient("sugars", cartItems),
+    ];
 
-  const score = calculateNutritionScore(
-    sumNutrient("protein", cartItems),
-    sumNutrient("fats", cartItems),
-    sumNutrient("sugars", cartItems)
-  );
+    const score = calculateNutritionScore(
+      sumNutrient("protein", cartItems),
+      sumNutrient("fats", cartItems),
+      sumNutrient("sugars", cartItems)
+    );
 
-  const nutrientKeys = [
-    "carbohydrates_100g",
-    "cholesterol_100g",
-    "fat_100g",
-    "salt_100g",
-    "sodium_100g",
-    "proteins_100g",
-    "sugars_100g",
-    "saturated-fat_100g",
-  ];
-  const importantNutrients = {
-    carbohydrates: "Carbohydrates",
-    energy: "Energy",
-    proteins: "Protein",
-    fat: "Fat",
-    "saturated fat": "Saturated Fat",
-    "trans fat": "Trans Fat",
-    sugars: "Sugars",
-    salt: "Salt",
-    sodium: "Sodium",
-    saturatedFats: "Saturated Fats",
-  };
-  const [nutrientValue, setNutrientValue] = useState({});
-  const [aiResponse, setAiResponse] = useState({});
+    const nutrientKeys = [
+      "carbohydrates_100g",
+      "cholesterol_100g",
+      "fat_100g",
+      "salt_100g",
+      "sodium_100g",
+      "proteins_100g",
+      "sugars_100g",
+      "saturated-fat_100g",
+    ];
+    const importantNutrients = {
+      carbohydrates: "Carbohydrates",
+      energy: "Energy",
+      proteins: "Protein",
+      fat: "Fat",
+      "saturated fat": "Saturated Fat",
+      "trans fat": "Trans Fat",
+      sugars: "Sugars",
+      salt: "Salt",
+      sodium: "Sodium",
+      saturatedFats: "Saturated Fats",
+    };
+    const [nutrientValue, setNutrientValue] = useState({});
+    const [aiResponse, setAiResponse] = useState({});
 
-  // Update nutrientValue whenever cartItems change
-  useEffect(() => {
-    const totals = {};
+    // Update nutrientValue whenever cartItems change
+    useEffect(() => {
+      const totals = {};
 
-    nutrientKeys.forEach((key) => {
-      const total = sumNestedNutrient(key);
-      totals[key] = total;
-    });
+      nutrientKeys.forEach((key) => {
+        const total = sumNestedNutrient(key);
+        totals[key] = total;
+      });
 
-    if (Object.keys(totals).length > 0) {
-      setNutrientValue(totals);
-    }
-  }, [cartItems]);
+      if (Object.keys(totals).length > 0) {
+        setNutrientValue(totals);
+      }
+    }, [cartItems]);
 
-  // Once nutrientValue is updated and not empty, fetch AI response
-  useEffect(() => {
-    if (Object.keys(nutrientValue).length > 0) {
-      fetchAiResponse();
-    }
-  }, [nutrientValue]);
+    // Once nutrientValue is updated and not empty, fetch AI response
+    useEffect(() => {
+      if (Object.keys(nutrientValue).length > 0) {
+        fetchAiResponse();
+      }
+    }, [nutrientValue]);
 
-  const fetchAiResponse = async () => {
-    try {
-      const response = await fetchData(nutrientValue);
-      console.log("Ai content",response);
-      const aiContent = response.choices?.[0]?.message?.content;
-      const cleaned = aiContent
-        ?.replace(/```(javascript|json)?|```/g, "")
-        .trim();
-
-      let aiObject;
-
-      // Try JSON.parse directly
+    const fetchAiResponse = async () => {
       try {
-        aiObject = JSON.parse(cleaned);
-      } catch (jsonError) {
-        // Attempt to fix unquoted keys
-        const fixed = cleaned.replace(
-          /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
-          '$1"$2"$3'
-        );
+        const response = await fetchData(nutrientValue);
+        console.log("Ai content",response);
+        const aiContent = response.choices?.[0]?.message?.content;
+        const cleaned = aiContent
+          ?.replace(/```(javascript|json)?|```/g, "")
+          .trim();
 
+        let aiObject;
+
+        // Try JSON.parse directly
         try {
-          aiObject = JSON.parse(fixed);
-        } catch (finalError) {
-          // Fallback to Function-based parsing
+          aiObject = JSON.parse(cleaned);
+        } catch (jsonError) {
+          // Attempt to fix unquoted keys
+          const fixed = cleaned.replace(
+            /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
+            '$1"$2"$3'
+          );
+
           try {
-            aiObject = Function('"use strict"; return (' + cleaned + ")")();
-          } catch (evalError) {
-            throw new Error(
-              "Failed to parse AI response at all: " + evalError.message
-            );
+            aiObject = JSON.parse(fixed);
+          } catch (finalError) {
+            // Fallback to Function-based parsing
+            try {
+              aiObject = Function('"use strict"; return (' + cleaned + ")")();
+            } catch (evalError) {
+              throw new Error(
+                "Failed to parse AI response at all: " + evalError.message
+              );
+            }
           }
         }
-      }
 
-      setAiResponse(aiObject);
-    } catch (error) {
-      console.error("Failed to fetch or parse AI response:", error);
-    }
-  };
+        setAiResponse(aiObject);
+      } catch (error) {
+        console.error("Failed to fetch or parse AI response:", error);
+      }
+    };
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
@@ -333,4 +333,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
