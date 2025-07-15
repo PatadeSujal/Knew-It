@@ -1,6 +1,5 @@
 "use client";
 import React, { useContext, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
@@ -18,14 +17,14 @@ import { sumNutrient } from "../actions/nutrient";
     // if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-    const sumNestedNutrient = (key) =>{
+const sumNestedNutrient = (key) => {
+  return cartItems.reduce((sum, item) => {
+    const value = item.nutrients?.[key];
+    return sum + (parseFloat(value) || 0);
+  }, 0);
+};
 
-      cartItems.reduce((sum, item) => {
-        const value = item.nutrients?.[key];
-        return sum + (parseFloat(value) || 0);
-      }, 0);
-      
-    };
+
 
     const nutrientKeys = [
       "carbohydrates_100g",
@@ -64,11 +63,7 @@ import { sumNutrient } from "../actions/nutrient";
     setNutrientValue(totals);
   }, [cartItems]);
 
-  useEffect(() => {
-    if (Object.keys(nutrientValue).length > 0) {
-      fetchAiResponse();
-    }
-  }, [nutrientValue]);
+
 
  const series = [
       sumNutrient("protein", cartItems),
@@ -123,6 +118,12 @@ import { sumNutrient } from "../actions/nutrient";
         console.error("Failed to fetch or parse AI response:", error);
       }
     };
+
+      useEffect(() => {
+    if (Object.keys(nutrientValue).length > 0) {
+      fetchAiResponse();
+    }
+  }, [nutrientValue]);
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
