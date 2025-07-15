@@ -3,24 +3,14 @@ import React, { useContext, useEffect } from "react";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
-import { DailyItemsList, ItemListProvider } from "../store/items-store";
+import { DailyItemsList } from "../store/items-store";
 import { fetchData } from "../actions/nutrient";
 import { positiveStatusStyles } from "../actions/nutrient";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
-
- const nutrientKeys = [
-    "carbohydrates_100g",
-    "cholesterol_100g",
-    "fat_100g",
-    "salt_100g",
-    "sodium_100g",
-    "proteins_100g",
-    "sugars_100g",
-    "saturated-fat_100g",
-  ];
+import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
  const Page = () => {
   const { cartItems } = useContext(DailyItemsList);
@@ -45,18 +35,7 @@ import { sumNutrient } from "../actions/nutrient";
   );
 
  
-  const importantNutrients = {
-    carbohydrates: "Carbohydrates",
-    energy: "Energy",
-    proteins: "Protein",
-    fat: "Fat",
-    "saturated fat": "Saturated Fat",
-    "trans fat": "Trans Fat",
-    sugars: "Sugars",
-    salt: "Salt",
-    sodium: "Sodium",
-    saturatedFats: "Saturated Fats",
-  };
+
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
 
