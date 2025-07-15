@@ -50,18 +50,17 @@ const sumNestedNutrient = (key) => {
     };
   
 
-     useEffect(() => {
-    if (!cartItems || cartItems.length === 0) return;
+useEffect(() => {
+  if (!cartItems || cartItems.length === 0) return;
 
-    const totals = {};
+  const totals = {};
+  nutrientKeys.forEach((key) => {
+    totals[key] = sumNestedNutrient(key);
+  });
 
-    nutrientKeys.forEach((key) => {
-      const total = sumNestedNutrient(key);
-      totals[key] = total;
-    });
+  setNutrientValue(totals);
+}, [cartItems, nutrientKeys, sumNestedNutrient]);
 
-    setNutrientValue(totals);
-  }, [cartItems]);
 
 
 
@@ -78,7 +77,7 @@ const sumNestedNutrient = (key) => {
     );
 
 
-    const fetchAiResponse = async () => {
+    const fetchAiResponse = useCallback(async () => {
       try {
         const response = await fetchData(nutrientValue);
         console.log("Ai content",response);
@@ -117,7 +116,7 @@ const sumNestedNutrient = (key) => {
       } catch (error) {
         console.error("Failed to fetch or parse AI response:", error);
       }
-    };
+    }, [nutrientValue]);
 
       useEffect(() => {
     if (Object.keys(nutrientValue).length > 0) {
