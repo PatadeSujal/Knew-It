@@ -19,7 +19,6 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
   const [aiResponse, setAiResponse] = useState({});
   // if (!cartItems) return <p>Loading...</p>;
   // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
-    if (typeof window === 'undefined') return;
 
   const sumNestedNutrient = (key) =>
     cartItems.reduce((sum, item) => {
@@ -102,6 +101,8 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
       fetchAiResponse();
     }
   }, [nutrientValue]);
+    if (typeof window === 'undefined') return;
+
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
