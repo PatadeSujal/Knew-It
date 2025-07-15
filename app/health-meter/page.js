@@ -14,7 +14,10 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
  const Page = () => {
   const { cartItems } = useContext(DailyItemsList);
-  if (!cartItems) return <p>Loading...</p>;
+  
+  const [nutrientValue, setNutrientValue] = useState({});
+  const [aiResponse, setAiResponse] = useState({});
+  // if (!cartItems) return <p>Loading...</p>;
   // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
   const sumNestedNutrient = (key) =>
@@ -34,10 +37,7 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
     sumNutrient("sugars", cartItems)
   );
 
- 
 
-  const [nutrientValue, setNutrientValue] = useState({});
-  const [aiResponse, setAiResponse] = useState({});
 
   // Update nutrientValue whenever cartItems change
   useEffect(() => {
@@ -54,11 +54,7 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
   }, [cartItems]);
 
   // Once nutrientValue is updated and not empty, fetch AI response
-  useEffect(() => {
-    if (Object.keys(nutrientValue).length > 0) {
-      fetchAiResponse();
-    }
-  }, [nutrientValue]);
+
 
   const fetchAiResponse = async () => {
     try {
@@ -100,6 +96,11 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
       console.error("Failed to fetch or parse AI response:", error);
     }
   };
+    useEffect(() => {
+    if (Object.keys(nutrientValue).length > 0) {
+      fetchAiResponse();
+    }
+  }, [nutrientValue]);
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
