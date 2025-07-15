@@ -12,82 +12,64 @@ import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
 import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
- const Page = () => {
+const Page = () => {
   const { cartItems } = useContext(DailyItemsList);
-  
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
-  // if (!cartItems) return <p>Loading...</p>;
-  // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
+  const [isClient, setIsClient] = useState(false);
 
-  const sumNestedNutrient = (key) =>
-    cartItems.reduce((sum, item) => {
-      const value = item.nutrients?.[key];
-      return sum + (parseFloat(value) || 0);
-    }, 0);
-  const series = [
-    sumNutrient("protein", cartItems),
-    sumNutrient("fats", cartItems),
-    sumNutrient("sugars", cartItems),
-  ];
+  // Ensure we're in client-side rendering
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  const score = calculateNutritionScore(
-    sumNutrient("protein", cartItems),
-    sumNutrient("fats", cartItems),
-    sumNutrient("sugars", cartItems)
+  const sumNestedNutrient = useCallback(
+    (key) => {
+      return cartItems.reduce((sum, item) => {
+        const value = item.nutrients?.[key];
+        return sum + (parseFloat(value) || 0);
+      }, 0);
+    },
+    [cartItems]
   );
 
+  const nutrientKeys = [
+    "carbohydrates_100g",
+    "cholesterol_100g",
+    "fat_100g",
+    "salt_100g",
+    "sodium_100g",
+    "proteins_100g",
+    "sugars_100g",
+    "saturated-fat_100g",
+  ];
 
-
-  // Update nutrientValue whenever cartItems change
   useEffect(() => {
-    const totals = {};
+    if (!cartItems || cartItems.length === 0) return;
 
+    const totals = {};
     nutrientKeys.forEach((key) => {
-      const total = sumNestedNutrient(key);
-      totals[key] = total;
+      totals[key] = sumNestedNutrient(key);
     });
 
-    if (Object.keys(totals).length > 0) {
-      setNutrientValue(totals);
-    }
-  }, [cartItems]);
+    setNutrientValue(totals);
+  }, [cartItems, nutrientKeys, sumNestedNutrient]);
 
-  // Once nutrientValue is updated and not empty, fetch AI response
-
-
-  const fetchAiResponse = async () => {
+  const fetchAiResponse = useCallback(async () => {
     try {
       const response = await fetchData(nutrientValue);
-      console.log("Ai content",response);
       const aiContent = response.choices?.[0]?.message?.content;
-      const cleaned = aiContent
-        ?.replace(/(javascript|json)?|/g, "")
-        .trim();
+      const cleaned = aiContent?.replace(/```(javascript|json)?|```/g, "").trim();
 
       let aiObject;
-
-      // Try JSON.parse directly
       try {
         aiObject = JSON.parse(cleaned);
-      } catch (jsonError) {
-        // Attempt to fix unquoted keys
-        const fixed = cleaned.replace(
-          /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
-          '$1"$2"$3'
-        );
-
+      } catch {
+        const fixed = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g, '$1"$2"$3');
         try {
           aiObject = JSON.parse(fixed);
-        } catch (finalError) {
-          // Fallback to Function-based parsing
-          try {
-            aiObject = Function('"use strict"; return (' + cleaned + ")")();
-          } catch (evalError) {
-            throw new Error(
-              "Failed to parse AI response at all: " + evalError.message
-            );
-          }
+        } catch {
+          aiObject = Function('"use strict"; return (' + cleaned + ")")();
         }
       }
 
@@ -95,14 +77,15 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
     } catch (error) {
       console.error("Failed to fetch or parse AI response:", error);
     }
-  };
-    useEffect(() => {
+  }, [nutrientValue]);
+
+  useEffect(() => {
     if (Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-  }, [nutrientValue]);
-    if (typeof window === 'undefined') return;
+  }, [nutrientValue, fetchAiResponse]);
 
+  if (!isClient) return null; // Prevent SSR issues
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
