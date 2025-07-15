@@ -46,6 +46,30 @@ export default function getNutrientColor(nutrientName, valuePer100g) {
   }
 }
 
+
+  export const  nutrientKeys = [
+    "carbohydrates_100g",
+    "cholesterol_100g",
+    "fat_100g",
+    "salt_100g",
+    "sodium_100g",
+    "proteins_100g",
+    "sugars_100g",
+    "saturated-fat_100g",
+  ];
+  export const importantNutrients = {
+    carbohydrates: "Carbohydrates",
+    energy: "Energy",
+    proteins: "Protein",
+    fat: "Fat",
+    "saturated fat": "Saturated Fat",
+    "trans fat": "Trans Fat",
+    sugars: "Sugars",
+    salt: "Salt",
+    sodium: "Sodium",
+    saturatedFats: "Saturated Fats",
+  };
+
 export function sumNutrient(key, arr) {
   return arr.reduce((sum, item) => sum + (parseFloat(item[key]) || 0), 0);
 }

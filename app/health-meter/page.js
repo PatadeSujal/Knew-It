@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
@@ -10,25 +10,28 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
+
+ const nutrientKeys = [
+    "carbohydrates_100g",
+    "cholesterol_100g",
+    "fat_100g",
+    "salt_100g",
+    "sodium_100g",
+    "proteins_100g",
+    "sugars_100g",
+    "saturated-fat_100g",
+  ];
+
  const Page = () => {
-   const { cartItems } = useContext(DailyItemsList);
+  const { cartItems } = useContext(DailyItemsList);
   if (!cartItems) return <p>Loading...</p>;
+  // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-  // Removed commented-out line
-
-  // This useEffect logs window.innerWidth once on the client side
-  useEffect(() => {
-    console.log(window.innerWidth);
-  }, []);
-
-  // sumNestedNutrient function - it relies on cartItems, so it should be memoized or moved
-  const sumNestedNutrient = useCallback((key) => { // Wrapped in useCallback
-    return cartItems.reduce((sum, item) => {
+  const sumNestedNutrient = (key) =>
+    cartItems.reduce((sum, item) => {
       const value = item.nutrients?.[key];
       return sum + (parseFloat(value) || 0);
     }, 0);
-  }, [cartItems]); // Dependency: cartItems
-
   const series = [
     sumNutrient("protein", cartItems),
     sumNutrient("fats", cartItems),
@@ -41,16 +44,7 @@ import { sumNutrient } from "../actions/nutrient";
     sumNutrient("sugars", cartItems)
   );
 
-  const nutrientKeys = [
-    "carbohydrates_100g",
-    "cholesterol_100g",
-    "fat_100g",
-    "salt_100g",
-    "sodium_100g",
-    "proteins_100g",
-    "sugars_100g",
-    "saturated-fat_100g",
-  ];
+ 
   const importantNutrients = {
     carbohydrates: "Carbohydrates",
     energy: "Energy",
@@ -66,19 +60,7 @@ import { sumNutrient } from "../actions/nutrient";
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
 
-  // fetchAiResponse function - needs to be memoized or moved into the useEffect
-  // since it's called inside an effect and depends on nutrientValue
-  const fetchAiResponse = useCallback(async () => { // Wrapped in useCallback
-    try {
-      const response = await fetchData(nutrientValue);
-      console.log("Ai content", response);
-      setAiResponse(response); // Assuming you want to store the response
-    } catch (error) {
-      console.error("Error fetching AI response:", error);
-    }
-  }, [nutrientValue]); // Dependency: nutrientValue, fetchData (if it's not a global function)
-
-  // Update nutrientValue whenever cartItems or nutrientKeys (if it could change) change
+  // Update nutrientValue whenever cartItems change
   useEffect(() => {
     const totals = {};
 
@@ -90,14 +72,55 @@ import { sumNutrient } from "../actions/nutrient";
     if (Object.keys(totals).length > 0) {
       setNutrientValue(totals);
     }
-  }, [cartItems, nutrientKeys, sumNestedNutrient]); // Added nutrientKeys and sumNestedNutrient as dependencies
+  }, [cartItems]);
 
   // Once nutrientValue is updated and not empty, fetch AI response
   useEffect(() => {
     if (Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-  }, [nutrientValue, fetchAiResponse]); // Added fetchAiResponse as a dependency
+  }, [nutrientValue]);
+
+  const fetchAiResponse = async () => {
+    try {
+      const response = await fetchData(nutrientValue);
+      console.log("Ai content",response);
+      const aiContent = response.choices?.[0]?.message?.content;
+      const cleaned = aiContent
+        ?.replace(/(javascript|json)?|/g, "")
+        .trim();
+
+      let aiObject;
+
+      // Try JSON.parse directly
+      try {
+        aiObject = JSON.parse(cleaned);
+      } catch (jsonError) {
+        // Attempt to fix unquoted keys
+        const fixed = cleaned.replace(
+          /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
+          '$1"$2"$3'
+        );
+
+        try {
+          aiObject = JSON.parse(fixed);
+        } catch (finalError) {
+          // Fallback to Function-based parsing
+          try {
+            aiObject = Function('"use strict"; return (' + cleaned + ")")();
+          } catch (evalError) {
+            throw new Error(
+              "Failed to parse AI response at all: " + evalError.message
+            );
+          }
+        }
+      }
+
+      setAiResponse(aiObject);
+    } catch (error) {
+      console.error("Failed to fetch or parse AI response:", error);
+    }
+  };
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
