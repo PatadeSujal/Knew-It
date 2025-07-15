@@ -48,7 +48,7 @@ export default function getNutrientColor(nutrientName, valuePer100g) {
 // In your actions/nutrient file
 export const windowUndifined = () => {
   if (typeof window !== 'undefined') {
-    console.log("This code is running in the browser");
+   return;
   }
 }
 

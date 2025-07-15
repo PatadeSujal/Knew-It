@@ -1,6 +1,6 @@
 "use client";
 import { DailyItemsList } from "../store/items-store";
-import { useEffect, useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import getNutrientColor from "../actions/nutrient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
 import { MdOutlineAddCircle } from "react-icons/md";

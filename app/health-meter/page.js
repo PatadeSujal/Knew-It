@@ -74,7 +74,6 @@ const Page = () => {
   const fetchAiResponse = async () => {
     try {
       const response = await fetchData(nutrientValue);
-      console.log("Ai content", response);
       const aiContent = response.choices?.[0]?.message?.content;
       const cleaned = aiContent?.replace(/(javascript|json)?|/g, "").trim();
 

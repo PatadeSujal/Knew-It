@@ -27,7 +27,6 @@ export const ItemListProvider = ({ children }) => {
     fetch(`https://world.openfoodfacts.org/api/v2/product/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        const price = getRandomPrice();
         if (data && data.product) {
           const product = data.product;
           const cartItem = {
@@ -39,6 +38,8 @@ export const ItemListProvider = ({ children }) => {
             fats: parseFloat(product.nutriments?.["saturated-fat_100g"]),
             sugars: parseFloat(product.nutriments?.sugars_100g),
             nutrients:product.nutriments,
+            item_quantity_unit: product.product_quantity_unit || "g",
+            item_quantity: product.product_quantity || "NA",
           };
           setCartItems((prevItems) => [...prevItems, cartItem]);
         }
