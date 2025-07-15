@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useEffect } from "react";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
-import { DailyItemsList, ItemListProvider } from "../store/items-store";
+import { DailyItemsList } from "../store/items-store";
 import { fetchData } from "../actions/nutrient";
 import { positiveStatusStyles } from "../actions/nutrient";
 import { FaCheckCircle } from "react-icons/fa";
@@ -50,18 +50,16 @@ const sumNestedNutrient = useCallback((key) => {
     };
   
 
+const totals = {};
 useEffect(() => {
-  if (!cartItems || cartItems.length === 0) return;
+if (!cartItems || cartItems.length === 0) return;
 
-  const totals = {};
-  nutrientKeys.forEach((key) => {
-    totals[key] = sumNestedNutrient(key);
+
+nutrientKeys.forEach((key) => {
   });
 
   setNutrientValue(totals);
 }, [cartItems, nutrientKeys, sumNestedNutrient]);
-
-
 
 
  const series = [
@@ -118,13 +116,12 @@ useEffect(() => {
       }
     }, [nutrientValue]);
 
-      useEffect(() => {
+  useEffect(() => {
     if (Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-  }, [nutrientValue]);
+  }, [nutrientValue, fetchAiResponse]);
   return (
-    <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
         <h1 className="text-[#121a0f] sm:text-4xl text-2xl font-bold tracking-tighter mx-auto mt-12">
           Cart Health Summary
@@ -333,7 +330,6 @@ useEffect(() => {
           </div>
         </section>
       </div>
-    </>
   );
 };
 
