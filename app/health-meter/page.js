@@ -12,64 +12,82 @@ import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
 import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
-const Page = () => {
+ const Page = () => {
   const { cartItems } = useContext(DailyItemsList);
+    const [isClient, setIsClient] = useState(false);
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
-  const [isClient, setIsClient] = useState(false);
-
-  // Ensure we're in client-side rendering
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const sumNestedNutrient = useCallback(
-    (key) => {
-      return cartItems.reduce((sum, item) => {
-        const value = item.nutrients?.[key];
-        return sum + (parseFloat(value) || 0);
-      }, 0);
-    },
-    [cartItems]
-  );
-
-  const nutrientKeys = [
-    "carbohydrates_100g",
-    "cholesterol_100g",
-    "fat_100g",
-    "salt_100g",
-    "sodium_100g",
-    "proteins_100g",
-    "sugars_100g",
-    "saturated-fat_100g",
+  const sumNestedNutrient = (key) =>
+    cartItems.reduce((sum, item) => {
+      const value = item.nutrients?.[key];
+      return sum + (parseFloat(value) || 0);
+    }, 0);
+  const series = [
+    sumNutrient("protein", cartItems),
+    sumNutrient("fats", cartItems),
+    sumNutrient("sugars", cartItems),
   ];
 
-  useEffect(() => {
-    if (!cartItems || cartItems.length === 0) return;
+  const score = calculateNutritionScore(
+    sumNutrient("protein", cartItems),
+    sumNutrient("fats", cartItems),
+    sumNutrient("sugars", cartItems)
+  );
 
+
+
+  // Update nutrientValue whenever cartItems change
+  useEffect(() => {
     const totals = {};
+
     nutrientKeys.forEach((key) => {
-      totals[key] = sumNestedNutrient(key);
+      const total = sumNestedNutrient(key);
+      totals[key] = total;
     });
 
-    setNutrientValue(totals);
-  }, [cartItems, nutrientKeys, sumNestedNutrient]);
+    if (Object.keys(totals).length > 0) {
+      setNutrientValue(totals);
+    }
+  }, [cartItems]);
 
-  const fetchAiResponse = useCallback(async () => {
+  // Once nutrientValue is updated and not empty, fetch AI response
+
+
+  const fetchAiResponse = async () => {
     try {
       const response = await fetchData(nutrientValue);
+      console.log("Ai content",response);
       const aiContent = response.choices?.[0]?.message?.content;
-      const cleaned = aiContent?.replace(/```(javascript|json)?|```/g, "").trim();
+      const cleaned = aiContent
+        ?.replace(/(javascript|json)?|/g, "")
+        .trim();
 
       let aiObject;
+
+      // Try JSON.parse directly
       try {
         aiObject = JSON.parse(cleaned);
-      } catch {
-        const fixed = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g, '$1"$2"$3');
+      } catch (jsonError) {
+        // Attempt to fix unquoted keys
+        const fixed = cleaned.replace(
+          /([{,]\s*)([a-zA-Z0-9_-]+)(\s*:)/g,
+          '$1"$2"$3'
+        );
+
         try {
           aiObject = JSON.parse(fixed);
-        } catch {
-          aiObject = Function('"use strict"; return (' + cleaned + ")")();
+        } catch (finalError) {
+          // Fallback to Function-based parsing
+          try {
+            aiObject = Function('"use strict"; return (' + cleaned + ")")();
+          } catch (evalError) {
+            throw new Error(
+              "Failed to parse AI response at all: " + evalError.message
+            );
+          }
         }
       }
 
@@ -77,15 +95,14 @@ const Page = () => {
     } catch (error) {
       console.error("Failed to fetch or parse AI response:", error);
     }
-  }, [nutrientValue]);
-
-  useEffect(() => {
+  };
+    useEffect(() => {
     if (Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-  }, [nutrientValue, fetchAiResponse]);
+  }, [nutrientValue]);
+   if (!isClient) return null; // Prevent SSR issues
 
-  if (!isClient) return null; // Prevent SSR issues
   return (
     <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
