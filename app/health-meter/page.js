@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
@@ -18,9 +18,7 @@ import { sumNutrient } from "../actions/nutrient";
 
   // This useEffect logs window.innerWidth once on the client side
   useEffect(() => {
-    if (typeof window !== "undefined") { // This check is good for Next.js to prevent SSR errors
-      console.log(window.innerWidth);
-    }
+    console.log(window.innerWidth);
   }, []);
 
   // sumNestedNutrient function - it relies on cartItems, so it should be memoized or moved
