@@ -57,6 +57,7 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
 
   const fetchAiResponse = async () => {
+    if (typeof window === 'undefined') return;
     try {
       const response = await fetchData(nutrientValue);
       console.log("Ai content",response);
