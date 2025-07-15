@@ -1,9 +1,10 @@
 "use client";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import Navbar from "../components/Navbar";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
-import { DailyItemsList } from "../store/items-store";
+import { DailyItemsList, ItemListProvider } from "../store/items-store";
 import { fetchData } from "../actions/nutrient";
 import { positiveStatusStyles } from "../actions/nutrient";
 import { FaCheckCircle } from "react-icons/fa";
@@ -17,14 +18,14 @@ import { sumNutrient } from "../actions/nutrient";
     // if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-const sumNestedNutrient = useCallback((key) => {
-  return cartItems.reduce((sum, item) => {
-    const value = item.nutrients?.[key];
-    return sum + (parseFloat(value) || 0);
-  }, 0);
-}, [cartItems]);
+    const sumNestedNutrient = (key) =>{
 
-
+      cartItems.reduce((sum, item) => {
+        const value = item.nutrients?.[key];
+        return sum + (parseFloat(value) || 0);
+      }, 0);
+      
+    };
 
     const nutrientKeys = [
       "carbohydrates_100g",
@@ -50,17 +51,24 @@ const sumNestedNutrient = useCallback((key) => {
     };
   
 
-const totals = {};
-useEffect(() => {
-if (!cartItems || cartItems.length === 0) return;
+     useEffect(() => {
+    if (!cartItems || cartItems.length === 0) return;
 
+    const totals = {};
 
-nutrientKeys.forEach((key) => {
-  });
+    nutrientKeys.forEach((key) => {
+      const total = sumNestedNutrient(key);
+      totals[key] = total;
+    });
 
-  setNutrientValue(totals);
-}, [cartItems, nutrientKeys, sumNestedNutrient]);
+    setNutrientValue(totals);
+  }, [cartItems]);
 
+  useEffect(() => {
+    if (Object.keys(nutrientValue).length > 0) {
+      fetchAiResponse();
+    }
+  }, [nutrientValue]);
 
  const series = [
       sumNutrient("protein", cartItems),
@@ -75,7 +83,7 @@ nutrientKeys.forEach((key) => {
     );
 
 
-    const fetchAiResponse = useCallback(async () => {
+    const fetchAiResponse = async () => {
       try {
         const response = await fetchData(nutrientValue);
         console.log("Ai content",response);
@@ -114,14 +122,9 @@ nutrientKeys.forEach((key) => {
       } catch (error) {
         console.error("Failed to fetch or parse AI response:", error);
       }
-    }, [nutrientValue]);
-
-  useEffect(() => {
-    if (Object.keys(nutrientValue).length > 0) {
-      fetchAiResponse();
-    }
-  }, [nutrientValue, fetchAiResponse]);
+    };
   return (
+    <>
       <div className="container w-[90%] sm:w-[70%] flex flex-col mx-auto gap-10 border-gray-200 ">
         <h1 className="text-[#121a0f] sm:text-4xl text-2xl font-bold tracking-tighter mx-auto mt-12">
           Cart Health Summary
@@ -330,6 +333,7 @@ nutrientKeys.forEach((key) => {
           </div>
         </section>
       </div>
+    </>
   );
 };
 
