@@ -19,6 +19,7 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
   const [aiResponse, setAiResponse] = useState({});
   // if (!cartItems) return <p>Loading...</p>;
   // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
+    if (typeof window === 'undefined') return;
 
   const sumNestedNutrient = (key) =>
     cartItems.reduce((sum, item) => {
@@ -57,7 +58,6 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
 
 
   const fetchAiResponse = async () => {
-    if (typeof window === 'undefined') return;
     try {
       const response = await fetchData(nutrientValue);
       console.log("Ai content",response);
