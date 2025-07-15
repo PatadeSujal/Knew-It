@@ -161,7 +161,7 @@ const Page = () => {
                     Nutrient
                   </th>
                   <th className="py-3  text-sm font-medium text-gray-600">
-                    Amount (g)
+                    Amount (/100g)
                   </th>
                   <th className="py-3 px-4 text-sm font-medium text-gray-600 text-center">
                     Status

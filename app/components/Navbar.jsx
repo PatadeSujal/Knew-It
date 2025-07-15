@@ -47,7 +47,7 @@ const Navbar = () => {
     <>
       <nav className="w-full flex-col py-5  sm:h-20 flex items-center justify-center sticky top-0 bg-blue-100 z-10 ">
         <div className="flex justify-center gap-1 w-[100%] mx-auto h-full items-center">
-          <div className="w-[90px] sm:w-[10%]">
+          <div className="w-full sm:w-[10%]">
             <Link href="/">
               <img src="images/logo.png" className="w-full " alt="Logo" />
             </Link>
@@ -76,8 +76,8 @@ const Navbar = () => {
             <select name="mySelect" id="mySelect" onChange={handleChange}>
               {/* <option value="">Select Nutrient</option> */}
               <option value="protein">Protein /100g</option>
-              <option value="fats">Saturated Fats</option>
-              <option value="sugars">Sugar</option>
+              <option value="fats">Fats /100g</option>
+              <option value="sugars">Sugar/100g</option>
             </select>
           </div>
           <div className=" items-center mx-12  hidden sm:inline">
@@ -108,7 +108,7 @@ const Navbar = () => {
             <Link href="/search " className="">
               <input
                 type="text"
-                placeholder='Search "rice"'
+                placeholder='Type any food product here...'
                 className=" sm:hidden border-none m-2 rounded-lg  p-2  border-0 bg-[#f8f8f8]"
                 onChange={(e) => {
                   setSearchItems(e.target.value);
