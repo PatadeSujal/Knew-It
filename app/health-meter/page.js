@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect } from "react";
-import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
-import Chart from "react-apexcharts";
+import { calculateNutritionScore, getChartOptions, windowUndifined } from "../actions/nutrient";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { DailyItemsList } from "../store/items-store";
 import { fetchData } from "../actions/nutrient";
@@ -10,15 +10,32 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
-import { importantNutrients,nutrientKeys } from "../actions/nutrient";
+import { importantNutrients, nutrientKeys } from "../actions/nutrient";
 
- const Page = () => {
+const Chart = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+  loading: () => <div>Loading chart...</div>,
+});
+
+const Page = () => {
+
+
+  useEffect(() => {
+  // This code only runs on the client
+  if (typeof window !== 'undefined') {
+   windowUndifined();
+  }
+}, []);
+
   const { cartItems } = useContext(DailyItemsList);
-    const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [nutrientValue, setNutrientValue] = useState({});
   const [aiResponse, setAiResponse] = useState({});
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
+    setIsMounted(true);
   }, []);
   const sumNestedNutrient = (key) =>
     cartItems.reduce((sum, item) => {
@@ -37,10 +54,9 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
     sumNutrient("sugars", cartItems)
   );
 
-
-
   // Update nutrientValue whenever cartItems change
   useEffect(() => {
+    if (!isMounted) return;
     const totals = {};
 
     nutrientKeys.forEach((key) => {
@@ -51,19 +67,16 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
     if (Object.keys(totals).length > 0) {
       setNutrientValue(totals);
     }
-  }, [cartItems]);
+  }, [cartItems, isMounted]);
 
   // Once nutrientValue is updated and not empty, fetch AI response
-
 
   const fetchAiResponse = async () => {
     try {
       const response = await fetchData(nutrientValue);
-      console.log("Ai content",response);
+      console.log("Ai content", response);
       const aiContent = response.choices?.[0]?.message?.content;
-      const cleaned = aiContent
-        ?.replace(/(javascript|json)?|/g, "")
-        .trim();
+      const cleaned = aiContent?.replace(/(javascript|json)?|/g, "").trim();
 
       let aiObject;
 
@@ -96,12 +109,13 @@ import { importantNutrients,nutrientKeys } from "../actions/nutrient";
       console.error("Failed to fetch or parse AI response:", error);
     }
   };
-    useEffect(() => {
-    if (Object.keys(nutrientValue).length > 0) {
+  useEffect(() => {
+    if (isMounted && Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
     }
-  }, [nutrientValue]);
-   if (!isClient) return null; // Prevent SSR issues
+  }, [nutrientValue, isMounted]);
+
+  if (!isClient || !isMounted) return null;
 
   return (
     <>

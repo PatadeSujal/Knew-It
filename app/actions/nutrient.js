@@ -45,7 +45,12 @@ export default function getNutrientColor(nutrientName, valuePer100g) {
     return "red";
   }
 }
-
+// In your actions/nutrient file
+export const windowUndifined = () => {
+  if (typeof window !== 'undefined') {
+    console.log("This code is running in the browser");
+  }
+}
 
   export const  nutrientKeys = [
     "carbohydrates_100g",
