@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { calculateNutritionScore, getChartOptions } from "../actions/nutrient";
 import Chart from "react-apexcharts";
 import { useState } from "react";
@@ -17,12 +17,12 @@ import { sumNutrient } from "../actions/nutrient";
     // if (!cartItems) return <p>Loading...</p>;
     // const initialSeries = [12.1||cartItems?.protein, 23.5, 3.4, 5.4];
 
-const sumNestedNutrient = (key) => {
+const sumNestedNutrient = useCallback((key) => {
   return cartItems.reduce((sum, item) => {
     const value = item.nutrients?.[key];
     return sum + (parseFloat(value) || 0);
   }, 0);
-};
+}, [cartItems]);
 
 
 
