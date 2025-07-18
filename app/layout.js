@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ItemListProvider } from "./store/items-store";
 
 const geistSans = Geist({
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "KnewIt - Know Everything about your grocery",
-  description: "Know Everything about your grocery",
+  title: "KnewIt - Know Everything what you eat",
+  description: "Track your grocery nutrition with ease. View protein, fats, and sugar content instantly.",
   
 };
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
         <ItemListProvider>
           <Navbar />
           {children}
+          <SpeedInsights />
         </ItemListProvider>
       </body>
     </html>

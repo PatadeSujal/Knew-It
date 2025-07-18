@@ -12,6 +12,11 @@ import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
 import { importantNutrients, nutrientKeys } from "../actions/nutrient";
 
+
+
+// set tittle and description for the page
+
+
 const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
   loading: () => <div>Loading chart...</div>,
@@ -143,9 +148,9 @@ const Page = () => {
             </div>
             <div className="flex-1 sm:text-left">
               <h2 className="text-xl font-bold text-[#121a0f]">Health Meter</h2>
-              <p className="text-gray-600 mt-2">
+              {/* <p className="text-gray-600 mt-2">
                 Your cart has a good nutritional balance. Keep it up!
-              </p>
+              </p> */}
             </div>
           </div>
         </section>
