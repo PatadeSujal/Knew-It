@@ -1,7 +1,8 @@
+import Script from "next/script"; // ✅ Add this line
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ItemListProvider } from "./store/items-store";
 
 const geistSans = Geist({
@@ -14,15 +15,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export default function RootLayout({ children }) {
   return (
-  <html lang="en">
+    <html lang="en">
       <head>
-        {/* Google Analytics */}
+        {/* ✅ Google Analytics */}
         <Script
           strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
+          src="https://www.googletagmanager.com/gtag/js?id=G-PE2Q9LJMV3"
         />
         <Script
           id="google-analytics"
@@ -37,9 +37,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ItemListProvider>
           <Navbar />
           {children}
