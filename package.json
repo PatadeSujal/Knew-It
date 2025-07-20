@@ -11,7 +11,7 @@
   "dependencies": {
     "@vercel/speed-insights": "^1.2.0",
     "apexcharts": "^4.7.0",
-    "next": "15.3.5",
+    "next": "^15.3.5",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
     "react-dom": "^19.0.0",
