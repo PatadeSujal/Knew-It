@@ -4,7 +4,7 @@ import { useContext, useMemo } from "react";
 import getNutrientColor from "../actions/nutrient";
 import { ShimmerThumbnail } from "react-shimmer-effects";
 import { MdOutlineAddCircle } from "react-icons/md";
-import { FiMinusCircle } from "react-icons/fi";
+import { FaTrashAlt } from "react-icons/fa";
 
 const colorClassMap = {
   red: "text-red-500",
@@ -74,7 +74,7 @@ const Product = ({
               addItemDataToCart(item_id);
             }}
           >
-            <button className="btn text-[#318616] text-xs "><MdOutlineAddCircle /></button>
+            <button className="btn text-[#318616] text-xs ">ADD</button>
           </div>
         ) : (
           <div
@@ -83,7 +83,7 @@ const Product = ({
               removeItemDataToCart(item_id);
             }}
           >
-            <button className="btn text-white text-xs  "><FiMinusCircle /></button>
+            <button className="btn text-white text-xs  "><FaTrashAlt /></button>
           </div>
         )}
       </div>

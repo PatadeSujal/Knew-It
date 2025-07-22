@@ -3,6 +3,7 @@ import { DailyItemsList } from '../store/items-store';
 import DisplayCart from "./DisplayCart";
 import DisplayProducts from "./DisplayProducts";
 import { useContext } from 'react';
+import FeedbackFooter from './FeedbackFooter';
 const DisplayCatageoryItems = () => {
   const {setToggleCart,toggleCart} = useContext(DailyItemsList);
   // const hideCartMenu = () =>{
@@ -26,7 +27,7 @@ const DisplayCatageoryItems = () => {
           <DisplayProducts title="Fruit Juices" />
           <DisplayProducts title="Peanut butter" />
         </div>
-        
+        <FeedbackFooter/>
       </div>
     </>
   );

@@ -11,6 +11,7 @@ import { FaLightbulb } from "react-icons/fa";
 import { IoWarningOutline } from "react-icons/io5";
 import { sumNutrient } from "../actions/nutrient";
 import { importantNutrients, nutrientKeys } from "../actions/nutrient";
+import FeedbackFooter from "../components/FeedbackFooter";
 
 
 
@@ -329,6 +330,7 @@ const Page = () => {
               );
             })}
           </div>
+        <FeedbackFooter/>
         </section>
       </div>
     </>

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { DailyItemsList } from "../store/items-store";
-import { FiMinusCircle } from "react-icons/fi";
+import { FaTrashAlt } from "react-icons/fa";
 const CartItem = ({ item_name, item_quantity, item_image, item_price,item_id,item_quantity_unit }) => {
   const {removeItemDataToCart} = useContext(DailyItemsList);
   return (
@@ -26,7 +26,7 @@ const CartItem = ({ item_name, item_quantity, item_image, item_price,item_id,ite
             }}
           >
             <button className="btn text-white text-xs  ">
-              <FiMinusCircle />
+<FaTrashAlt />
             </button>
           </div>
         </div>
