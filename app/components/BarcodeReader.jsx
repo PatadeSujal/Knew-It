@@ -103,7 +103,7 @@ const BarcodeReader = () => {
         autoPlay
         muted
         playsInline
-        className="w-[95%] h-[35vh] sm:w-[50%] sm:h-[28rem] mx-auto border rounded-2xl shadow-md"
+        className="w-[95%] h-[25vh] sm:w-[50%] sm:h-[28rem] mx-auto border rounded-2xl shadow-md"
       />
 
       <p className="text-center mt-4 font-medium text-gray-700">
