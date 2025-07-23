@@ -61,7 +61,6 @@ const BarcodeReader = () => {
             if (!scannedCodesRef.current.has(scannedCode)) {
               scannedCodesRef.current.add(scannedCode);
               addItemDataToCart(scannedCode);
-              console.log("✅ Added to cart:", scannedCode);
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
@@ -100,12 +99,12 @@ const BarcodeReader = () => {
         Scan Barcode on Food Packaging
       </h2>
       <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        className="sm:w-[40%] w-[80%] sm:h-96 mx-auto border rounded-2xl shadow-md"
-      />
+  ref={videoRef}
+  autoPlay
+  muted
+  playsInline
+  className="w-[80%] h-[15vh] sm:w-[40%] sm:h-96 mx-auto border rounded-2xl shadow-md"
+/>
       <p className="text-center mt-4 font-medium text-gray-700">
         Scanned Code: {result}
       </p>
