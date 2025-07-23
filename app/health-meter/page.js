@@ -14,10 +14,6 @@ import { importantNutrients, nutrientKeys } from "../actions/nutrient";
 import FeedbackFooter from "../components/FeedbackFooter";
 
 
-
-// set tittle and description for the page
-
-
 const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
   loading: () => <div>Loading chart...</div>,
@@ -42,7 +38,7 @@ const Page = () => {
   useEffect(() => {
     setIsClient(true);
     setIsMounted(true);
-  }, []);
+  }, [cartItems]);
   const sumNestedNutrient = (key) =>
     cartItems.reduce((sum, item) => {
       const value = item.nutrients?.[key];
@@ -117,6 +113,7 @@ const Page = () => {
   useEffect(() => {
     if (isMounted && Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
+      console.log("Cart Items:", cartItems);
     }
   }, [nutrientValue, isMounted]);
 

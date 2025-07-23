@@ -31,7 +31,6 @@ const Page = () => {
 
     if (data.success) {
       setResult("Form Submitted Successfully");
-      console.log("Success", data);
       event.target.reset();
       router.push("/success");
       
