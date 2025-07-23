@@ -50,9 +50,9 @@ const Product = ({
           <ShimmerThumbnail />
         )}
       </div>
-      <div className="arrTime">
+      {/* <div className="arrTime">
         <p className="text-[9px] font-bold">17 min</p>
-      </div>
+      </div> */}
       <div className="name">
         <h2 className="text-xs font-semibold">{item_name}</h2>
       </div>
@@ -63,7 +63,7 @@ const Product = ({
         <div className={`price font-bold ${textColorClass}`}>
           {" "}
           {item_protein !== undefined && item_protein !== null
-            ? item_protein
+            ? item_protein + "g"
             : "NA"}
         </div>
 

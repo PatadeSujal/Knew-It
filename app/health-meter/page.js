@@ -189,7 +189,7 @@ const Page = () => {
                         {key.replace("_", "/")}
                       </td>
                       <td className="py-4 pr-4 text-[#121a0f]">
-                        {value.toFixed(2)}
+                        {value.toFixed(2)+ "g"}
                       </td>
                       <td className="py-4 px-4">
                         <div

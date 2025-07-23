@@ -4,6 +4,8 @@ import DisplayCart from "./DisplayCart";
 import DisplayProducts from "./DisplayProducts";
 import { useContext } from 'react';
 import FeedbackFooter from './FeedbackFooter';
+import { IoMdBarcode } from "react-icons/io";
+import Link from 'next/link';
 const DisplayCatageoryItems = () => {
   const {setToggleCart,toggleCart} = useContext(DailyItemsList);
   // const hideCartMenu = () =>{
@@ -26,6 +28,10 @@ const DisplayCatageoryItems = () => {
           <DisplayProducts title="Drinks" />
           <DisplayProducts title="Fruit Juices" />
           <DisplayProducts title="Peanut butter" />
+        </div>
+
+        <div className="scanner bg-red-400  w-[12%] sm:w-[6%] fixed bottom-20 right-8 flex justify-center p-3 items-center rounded-full z-20 ">
+          <Link href="/barcode"><button className='mx-auto text-white'><IoMdBarcode /></button></Link>
         </div>
         <FeedbackFooter/>
       </div>
