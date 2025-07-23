@@ -99,12 +99,13 @@ const BarcodeReader = () => {
         Scan Barcode on Food Packaging
       </h2>
       <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        className="w-[95%] h-[25vh] sm:w-[50%] sm:h-[28rem] mx-auto border rounded-2xl shadow-md"
-      />
+  ref={videoRef}
+  autoPlay
+  muted
+  playsInline
+  className="w-[95%] h-[20vh] sm:w-[60%] sm:h-[20vh] mx-auto border rounded-2xl shadow-md object-cover"
+/>
+
 
       <p className="text-center mt-4 font-medium text-gray-700">
         Scanned Code: {result}
