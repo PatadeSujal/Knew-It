@@ -6,9 +6,9 @@ const Page = () => {
   return (
     <>
       {/* Uncomment to enable barcode scanning */}
-      {/* <BarcodeReader /> */}
+      <BarcodeReader />
 
-      <div className="coming-soon-container mx-auto flex justify-center items-center flex-col gap-4 my-10">
+      {/* <div className="coming-soon-container mx-auto flex justify-center items-center flex-col gap-4 my-10">
         <h1 className="text-4xl font-bold">Coming Soon</h1>
         
         <video
@@ -22,7 +22,7 @@ const Page = () => {
           <source src="images/barcode-anim.webm" type="video/webm" />
           Your browser does not support the video tag.
         </video>
-      </div>
+      </div> */}
     </>
   );
 };
