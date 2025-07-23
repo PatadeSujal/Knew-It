@@ -99,12 +99,12 @@ const BarcodeReader = () => {
         Scan Barcode on Food Packaging
       </h2>
       <video
-  ref={videoRef}
-  autoPlay
-  muted
-  playsInline
-  className="w-[80%] h-[15vh] sm:w-[40%] sm:h-96 mx-auto border rounded-2xl shadow-md"
-/>
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-[15vh] sm:w-[40%] sm:h-96 mx-auto border rounded-2xl shadow-md"
+      />
       <p className="text-center mt-4 font-medium text-gray-700">
         Scanned Code: {result}
       </p>
@@ -125,22 +125,22 @@ const BarcodeReader = () => {
             />
           ))}
 
-          <div className="health-meter">
-            <button
-              type="button "
-              className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-52 flex gap-2 justify-center items-center cursor-pointer "
+        <div className="health-meter">
+          <button
+            type="button "
+            className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-52 flex gap-2 justify-center items-center cursor-pointer "
+          >
+            <Link
+              href="/health-meter"
+              className="flex justify-center items-center flex-col gap-2 font-bold"
             >
-              <Link
-                href="/health-meter"
-                className="flex justify-center items-center flex-col gap-2 font-bold"
-              >
-                <FaTachometerAlt />
-                Health Meter
-              </Link>
-            </button>
-          </div>
+              <FaTachometerAlt />
+              Health Meter
+            </Link>
+          </button>
+        </div>
       </div>
-      <FeedbackFooter/>
+      <FeedbackFooter />
     </div>
   );
 };
