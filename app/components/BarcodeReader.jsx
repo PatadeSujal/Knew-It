@@ -33,13 +33,28 @@ const BarcodeReader = () => {
     scannedOnceRef.current = false;
 
     const hints = new Map();
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-      BarcodeFormat.EAN_13,
-      BarcodeFormat.UPC_A,
-      BarcodeFormat.UPC_E,
-      BarcodeFormat.CODE_128,
-      BarcodeFormat.CODE_39,
-    ]);
+  hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+  BarcodeFormat.EAN_13,
+  BarcodeFormat.EAN_8,
+  BarcodeFormat.UPC_A,
+  BarcodeFormat.UPC_E,
+  BarcodeFormat.CODE_128,
+  BarcodeFormat.CODE_39,
+  BarcodeFormat.CODE_93,
+  BarcodeFormat.ITF,
+  BarcodeFormat.CODABAR,
+  BarcodeFormat.DATA_MATRIX,
+  BarcodeFormat.QR_CODE,
+  BarcodeFormat.PDF_417,
+  BarcodeFormat.AZTEC,
+  BarcodeFormat.RSS_14, // GS1 DataBar
+  BarcodeFormat.RSS_EXPANDED,
+  BarcodeFormat.MAXICODE,
+  BarcodeFormat.MSI,
+  BarcodeFormat.PLESSEY,
+  BarcodeFormat.INTERLEAVED_2_OF_5,
+]);
+
 
     const reader = new BrowserMultiFormatReader(hints);
 
