@@ -7,15 +7,21 @@ import { FaTachometerAlt } from "react-icons/fa";
 import CartItem from "./CartItem";
 import Link from "next/link";
 import FeedbackFooter from "./FeedbackFooter";
+import Popup from "./Popup";
 
 const BarcodeReader = () => {
   const [result, setResult] = useState("");
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const [message,setMessage] = useState("Product Data Not Available");
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const scannedOnceRef = useRef(false);
   const scannedCodesRef = useRef(new Set()); // ✅ track scanned barcodes
   const { addItemDataToCart, cartItems } = useContext(DailyItemsList);
 
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const constraints = {
     video: {
@@ -57,22 +63,26 @@ const BarcodeReader = () => {
             const scannedCode = res.getText();
             setResult(scannedCode);
 
-            // ✅ Only add if NOT in the scannedCodes Set
+            
             if (!scannedCodesRef.current.has(scannedCode)) {
               scannedCodesRef.current.add(scannedCode);
               addItemDataToCart(scannedCode);
+
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
-
+            
             stopScanner();
 
             setTimeout(() => {
               startScanner();
             }, 2000);
           }
+
+         
         }
       );
+
     } catch (err) {
       console.error("Camera error:", err);
     }
@@ -90,8 +100,17 @@ const BarcodeReader = () => {
 
   useEffect(() => {
     startScanner();
+    console.log("CartItems", cartItems[cartItems.length - 1]?.protein);
+    console.log("CartItems", cartItems);
+    if (Number.isNaN(cartItems[cartItems.length - 1]?.protein)) {
+
+      setPopupOpen(true);
+      setMessage(`Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`);
+      cartItems.pop();
+      console.log("❌ Product not found in the database");
+    }
     return () => stopScanner();
-  }, []);
+  }, [cartItems]);
 
   return (
     <div>
@@ -99,13 +118,12 @@ const BarcodeReader = () => {
         Scan Barcode on Food Packaging
       </h2>
       <video
-  ref={videoRef}
-  autoPlay
-  muted
-  playsInline
-  className="w-[95%] h-[20vh] sm:w-[60%] sm:h-[20vh] mx-auto border rounded-2xl shadow-md object-cover"
-/>
-
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-[95%] h-[20vh] sm:w-[60%] sm:h-[20vh] mx-auto border rounded-2xl shadow-md object-cover"
+      />
 
       <p className="text-center mt-4 font-medium text-gray-700">
         Scanned Code: {result}
@@ -126,6 +144,13 @@ const BarcodeReader = () => {
               item_quantity_unit={item.product_quantity_unit}
             />
           ))}
+
+        {isPopupOpen && (
+          <Popup
+            message={message}
+            onClose={() => setPopupOpen(!isPopupOpen)}
+          />
+        )}
 
         <div className="health-meter">
           <button
