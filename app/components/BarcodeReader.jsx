@@ -85,8 +85,7 @@ const BarcodeReader = () => {
 
                 const isInvalid =
                   !item ||
-                  Number.isNaN(item.protein) ||
-                  item.name === undefined;
+                  Number.isNaN(item.protein);
 
                 if (isInvalid) {
                   setMessage(
