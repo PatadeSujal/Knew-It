@@ -19,7 +19,6 @@ const BarcodeReader = () => {
   const scannedCodesRef = useRef(new Set()); // ✅ track scanned barcodes
   const { addItemDataToCart, cartItems } = useContext(DailyItemsList);
 
-
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const constraints = {
     video: {
@@ -80,25 +79,34 @@ const BarcodeReader = () => {
               addItemDataToCart(scannedCode);
               setResult(scannedCode);
 
-              // Wait 300ms to allow cart update, then check the product
+              // ⏳ Give React time to update context
               setTimeout(() => {
-                const latestItem = cartItems[cartItems.length - 1];
+                const item = cartItems.find((item) => item.id === scannedCode);
 
-                if (
-                  !latestItem ||
-                  Number.isNaN(latestItem?.protein) ||
-                  latestItem?.name === undefined
-                ) {
+                const isInvalid =
+                  !item ||
+                  Number.isNaN(item.protein) ||
+                  item.name === undefined;
+
+                if (isInvalid) {
                   setMessage(
-                    latestItem?.name
-                      ? `Product (${latestItem.name}) Data is Not Available`
-                      : `Product Data is Not Available`
+                    item?.name
+                      ? `Product (${item.name}) Data is Not Available`
+                      : "Product Data is Not Available"
                   );
                   setPopupOpen(true);
-                  cartItems.pop(); // Remove invalid item
+
+                  // ❌ Remove the invalid item
+                  const index = cartItems.findIndex(
+                    (i) => i.id === scannedCode
+                  );
+                  if (index !== -1) {
+                    cartItems.splice(index, 1); // manually remove it
+                  }
+
                   console.log("❌ Product not found in the database");
                 }
-              }, 300); // Small delay to let state update
+              }, 300); // Adjust delay if needed
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
@@ -126,11 +134,10 @@ const BarcodeReader = () => {
     }
   };
 
- useEffect(() => {
-  startScanner();
-  return () => stopScanner();
-}, []);
-
+  useEffect(() => {
+    startScanner();
+    return () => stopScanner();
+  }, []);
 
   return (
     <div>
