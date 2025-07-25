@@ -181,7 +181,7 @@ const BarcodeReader = () => {
             />
           ))}
 
-        {!isPopupOpen && (
+        {isPopupOpen && (
           <Popup message={message} onClose={() => setPopupOpen(false)} />
         )}
 
