@@ -73,6 +73,7 @@ const BarcodeReader = () => {
 
             const scannedCode = res.getText();
             setResult(scannedCode);
+                  setPopupOpen(false);
 
             if (!scannedCodesRef.current.has(scannedCode)) {
               scannedCodesRef.current.add(scannedCode);
