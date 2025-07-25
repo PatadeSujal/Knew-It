@@ -12,16 +12,14 @@ import Popup from "./Popup";
 const BarcodeReader = () => {
   const [result, setResult] = useState("");
   const [isPopupOpen, setPopupOpen] = useState(false);
-  const [message,setMessage] = useState("Product Data Not Available");
+  const [message, setMessage] = useState("Product Data Not Available");
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const scannedOnceRef = useRef(false);
   const scannedCodesRef = useRef(new Set()); // ✅ track scanned barcodes
   const { addItemDataToCart, cartItems } = useContext(DailyItemsList);
 
-  const togglePopup = () => {
-    setShowPopup(!showPopup);
-  };
+
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const constraints = {
     video: {
@@ -33,28 +31,27 @@ const BarcodeReader = () => {
     scannedOnceRef.current = false;
 
     const hints = new Map();
-  hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-  BarcodeFormat.EAN_13,
-  BarcodeFormat.EAN_8,
-  BarcodeFormat.UPC_A,
-  BarcodeFormat.UPC_E,
-  BarcodeFormat.CODE_128,
-  BarcodeFormat.CODE_39,
-  BarcodeFormat.CODE_93,
-  BarcodeFormat.ITF,
-  BarcodeFormat.CODABAR,
-  BarcodeFormat.DATA_MATRIX,
-  BarcodeFormat.QR_CODE,
-  BarcodeFormat.PDF_417,
-  BarcodeFormat.AZTEC,
-  BarcodeFormat.RSS_14, // GS1 DataBar
-  BarcodeFormat.RSS_EXPANDED,
-  BarcodeFormat.MAXICODE,
-  BarcodeFormat.MSI,
-  BarcodeFormat.PLESSEY,
-  BarcodeFormat.INTERLEAVED_2_OF_5,
-]);
-
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.UPC_A,
+      BarcodeFormat.UPC_E,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.CODE_39,
+      BarcodeFormat.CODE_93,
+      BarcodeFormat.ITF,
+      BarcodeFormat.CODABAR,
+      BarcodeFormat.DATA_MATRIX,
+      BarcodeFormat.QR_CODE,
+      BarcodeFormat.PDF_417,
+      BarcodeFormat.AZTEC,
+      BarcodeFormat.RSS_14, // GS1 DataBar
+      BarcodeFormat.RSS_EXPANDED,
+      BarcodeFormat.MAXICODE,
+      BarcodeFormat.MSI,
+      BarcodeFormat.PLESSEY,
+      BarcodeFormat.INTERLEAVED_2_OF_5,
+    ]);
 
     const reader = new BrowserMultiFormatReader(hints);
 
@@ -78,26 +75,42 @@ const BarcodeReader = () => {
             const scannedCode = res.getText();
             setResult(scannedCode);
 
-            
             if (!scannedCodesRef.current.has(scannedCode)) {
               scannedCodesRef.current.add(scannedCode);
               addItemDataToCart(scannedCode);
+              setResult(scannedCode);
 
+              // Wait 300ms to allow cart update, then check the product
+              setTimeout(() => {
+                const latestItem = cartItems[cartItems.length - 1];
+
+                if (
+                  !latestItem ||
+                  Number.isNaN(latestItem?.protein) ||
+                  latestItem?.name === undefined
+                ) {
+                  setMessage(
+                    latestItem?.name
+                      ? `Product (${latestItem.name}) Data is Not Available`
+                      : `Product Data is Not Available`
+                  );
+                  setPopupOpen(true);
+                  cartItems.pop(); // Remove invalid item
+                  console.log("❌ Product not found in the database");
+                }
+              }, 300); // Small delay to let state update
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
-            
+
             stopScanner();
 
             setTimeout(() => {
               startScanner();
             }, 2000);
           }
-
-         
         }
       );
-
     } catch (err) {
       console.error("Camera error:", err);
     }
@@ -117,11 +130,17 @@ const BarcodeReader = () => {
     startScanner();
     console.log("CartItems", cartItems[cartItems.length - 1]?.protein);
     console.log("CartItems", cartItems);
-    if (Number.isNaN(cartItems[cartItems.length - 1]?.protein) || cartItems[cartItems.length - 1]?.name === undefined) {
-
+    if (
+      Number.isNaN(cartItems[cartItems.length - 1]?.protein) ||
+      cartItems[cartItems.length - 1]?.name === undefined
+    ) {
       setPopupOpen(true);
-      if(cartItems[cartItems.length - 1]?.name !== undefined){
-        setMessage(`Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`);
+      if (cartItems[cartItems.length - 1]?.name !== undefined) {
+        setMessage(
+          `Product (${
+            cartItems[cartItems.length - 1]?.name
+          }) Data is Not Available`
+        );
       }
       cartItems.pop();
       console.log("❌ Product not found in the database");
@@ -162,11 +181,8 @@ const BarcodeReader = () => {
             />
           ))}
 
-        {isPopupOpen && (
-          <Popup
-            message={message}
-            onClose={() => setPopupOpen(!isPopupOpen)}
-          />
+        {!isPopupOpen && (
+          <Popup message={message} onClose={() => setPopupOpen(false)} />
         )}
 
         <div className="health-meter">
