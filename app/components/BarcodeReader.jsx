@@ -105,7 +105,9 @@ const BarcodeReader = () => {
     if (Number.isNaN(cartItems[cartItems.length - 1]?.protein) || cartItems[cartItems.length - 1]?.name === undefined) {
 
       setPopupOpen(true);
-      setMessage(`Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`);
+      if(cartItems[cartItems.length - 1]?.name !== undefined){
+        setMessage(`Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`);
+      }
       cartItems.pop();
       console.log("❌ Product not found in the database");
     }
