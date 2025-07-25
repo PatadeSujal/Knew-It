@@ -126,7 +126,11 @@ const BarcodeReader = () => {
     }
   };
 
- 
+ useEffect(() => {
+  startScanner();
+  return () => stopScanner();
+}, []);
+
 
   return (
     <div>
