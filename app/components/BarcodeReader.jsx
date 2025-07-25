@@ -102,7 +102,7 @@ const BarcodeReader = () => {
     startScanner();
     console.log("CartItems", cartItems[cartItems.length - 1]?.protein);
     console.log("CartItems", cartItems);
-    if (Number.isNaN(cartItems[cartItems.length - 1]?.protein)) {
+    if (Number.isNaN(cartItems[cartItems.length - 1]?.protein) || cartItems[cartItems.length - 1]?.name === undefined) {
 
       setPopupOpen(true);
       setMessage(`Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`);
