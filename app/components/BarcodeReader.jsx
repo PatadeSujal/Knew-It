@@ -126,27 +126,7 @@ const BarcodeReader = () => {
     }
   };
 
-  useEffect(() => {
-    startScanner();
-    console.log("CartItems", cartItems[cartItems.length - 1]?.protein);
-    console.log("CartItems", cartItems);
-    if (
-      Number.isNaN(cartItems[cartItems.length - 1]?.protein) ||
-      cartItems[cartItems.length - 1]?.name === undefined
-    ) {
-      setPopupOpen(true);
-      if (cartItems[cartItems.length - 1]?.name !== undefined) {
-        setMessage(
-          `Product (${
-            cartItems[cartItems.length - 1]?.name
-          }) Data is Not Available`
-        );
-      }
-      cartItems.pop();
-      console.log("❌ Product not found in the database");
-    }
-    return () => stopScanner();
-  }, [cartItems]);
+ 
 
   return (
     <div>
