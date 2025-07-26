@@ -85,9 +85,9 @@ const BarcodeReader = () => {
               setTimeout(() => {
                 const item = cartItems.find((item) => item.id === scannedCode);
 
-                const isInvalid = !item || Number.isNaN(item.protein);
+                const isInvalid = !item ;
 
-                if (isInvalid) {
+                if (!isInvalid) {
                   setMessage(
                     item?.name
                       ? `Product (${item.name}) Data is Not Available`
@@ -105,7 +105,7 @@ const BarcodeReader = () => {
 
                   console.log("❌ Product not found in the database");
                 }
-              }, 300); // Adjust delay if needed
+              }, 100); // Adjust delay if needed
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
