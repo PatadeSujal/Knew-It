@@ -113,7 +113,6 @@ const Page = () => {
   useEffect(() => {
     if (isMounted && Object.keys(nutrientValue).length > 0) {
       fetchAiResponse();
-      console.log("Cart Items:", cartItems);
     }
   }, [nutrientValue, isMounted]);
 
