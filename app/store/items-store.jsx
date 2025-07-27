@@ -8,17 +8,20 @@ export const DailyItemsList = createContext({
   toggleCart: false,
   tfLabel: "protein",
   generalProducts:[],
-
+  showPopup: false,
+  setShowPopup: () => {},
+  message:"Product Not found",
+  setMessage: () =>{},
 });
 
 
 export const ItemListProvider = ({ children }) => {
   const [searchItems, setSearchItems] = useState(null);
- 
+  const [showPopup, setShowPopup] = useState(false);
   const [toggleCart, setToggleCart] = useState(false);
   const [tfLabel, setTfLabel] = useState("protein");
   const [generalProducts,setGeneralProducts] = useState([]);
-
+const [message, setMessage] = useState("Product Not found");
 
   let [cartItems, setCartItems] = useState([]);
   const addItemDataToCart = (id) => {
@@ -38,8 +41,13 @@ export const ItemListProvider = ({ children }) => {
             nutrients:product.nutriments,
             item_quantity_unit: product.product_quantity_unit || "g",
             item_quantity: product.product_quantity || "NA",
+            item_status:data.status,
           };
           setCartItems((prevItems) => [...prevItems, cartItem]);
+        }else {
+          setMessage("Product Not found");
+          setShowPopup(true);
+          
         }
       })
       .catch((err) => console.error("Error adding item to cart:", err));
@@ -69,6 +77,10 @@ export const ItemListProvider = ({ children }) => {
         generalProducts,
         setGeneralProducts,
         removeItemDataToCart,
+        showPopup,
+        setShowPopup,
+        message,
+        setMessage,
       }}
     >
       {children}

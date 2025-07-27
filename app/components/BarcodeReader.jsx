@@ -12,13 +12,16 @@ import Statement from "./Statement";
 
 const BarcodeReader = () => {
   const [result, setResult] = useState("");
-  const [isPopupOpen, setPopupOpen] = useState(false);
-  const [message, setMessage] = useState("Product Data Not Available");
+  
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const scannedOnceRef = useRef(false);
-  const scannedCodesRef = useRef(new Set()); // ✅ track scanned barcodes
-  const { addItemDataToCart, cartItems } = useContext(DailyItemsList);
+  const scannedCodesRef = useRef(new Set());
+  const [scannedCodeToValidate, setScannedCodeToValidate] = useState(null);
+
+  const { addItemDataToCart, cartItems,showPopup,setShowPopup,message,setMessage } = useContext(DailyItemsList);
+
+
 
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const constraints = {
@@ -45,7 +48,7 @@ const BarcodeReader = () => {
       BarcodeFormat.QR_CODE,
       BarcodeFormat.PDF_417,
       BarcodeFormat.AZTEC,
-      BarcodeFormat.RSS_14, // GS1 DataBar
+      BarcodeFormat.RSS_14,
       BarcodeFormat.RSS_EXPANDED,
       BarcodeFormat.MAXICODE,
       BarcodeFormat.MSI,
@@ -74,44 +77,18 @@ const BarcodeReader = () => {
 
             const scannedCode = res.getText();
             setResult(scannedCode);
-            setPopupOpen(false);
 
             if (!scannedCodesRef.current.has(scannedCode)) {
               scannedCodesRef.current.add(scannedCode);
               addItemDataToCart(scannedCode);
-              setResult(scannedCode);
+              
+              setScannedCodeToValidate({ id: scannedCode, time: Date.now() }); // use object to force change
 
-              // ⏳ Give React time to update context
-              setTimeout(() => {
-                const item = cartItems.find((item) => item.id === scannedCode);
-
-                const isInvalid = !item ;
-
-                if (!isInvalid) {
-                  setMessage(
-                    item?.name
-                      ? `Product (${item.name}) Data is Not Available`
-                      : "Product Data is Not Available"
-                  );
-                  setPopupOpen(true);
-
-                  // ❌ Remove the invalid item
-                  const index = cartItems.findIndex(
-                    (i) => i.id === scannedCode
-                  );
-                  if (index !== -1) {
-                    cartItems.splice(index, 1); // manually remove it
-                  }
-
-                  console.log("❌ Product not found in the database");
-                }
-              }, 100); // Adjust delay if needed
             } else {
               console.log("❌ Already scanned:", scannedCode);
             }
 
             stopScanner();
-
             setTimeout(() => {
               startScanner();
             }, 2000);
@@ -133,16 +110,37 @@ const BarcodeReader = () => {
     }
   };
 
+
+
   useEffect(() => {
     startScanner();
     return () => stopScanner();
   }, []);
+
+  useEffect(() => {
+    console.log("Product is " + cartItems.length);
+    console.log(cartItems[cartItems.length - 1]?.protein);
+    console.log("pop up",showPopup);
+    if(Number.isNaN(cartItems[cartItems.length - 1]?.protein) ){
+      console.log("Product is not valid");
+      setMessage(
+        cartItems[cartItems.length - 1]?.name
+        ? `Product (${cartItems[cartItems.length - 1]?.name}) Data is Not Available`
+        : "Product Data is Not Available"
+      );
+      console.log("pop up",showPopup);
+      setShowPopup(true)
+
+    cartItems.pop();
+    }
+  }, [cartItems.length]);
 
   return (
     <div>
       <h2 className="text-center text-xl font-semibold my-5">
         Scan Barcode on Food Packaging
       </h2>
+
       <video
         ref={videoRef}
         autoPlay
@@ -171,8 +169,8 @@ const BarcodeReader = () => {
             />
           ))}
 
-        {isPopupOpen && (
-          <Popup message={message} onClose={() => setPopupOpen(false)} />
+        {showPopup && (
+          <Popup message={message}/>
         )}
 
         {cartItems.length === 0 && (
@@ -195,6 +193,7 @@ const BarcodeReader = () => {
           </Link>
         </div>
       </div>
+
       <FeedbackFooter />
     </div>
   );

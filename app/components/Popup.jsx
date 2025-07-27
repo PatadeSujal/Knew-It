@@ -1,7 +1,16 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
+import { DailyItemsList } from '../store/items-store';
 
-function Popup({ message, onClose }) {
+function Popup({ message }) {
+
+  const { setShowPopup,showPopup } = useContext(DailyItemsList);
+
+  function handleHidePopup(){
+    setShowPopup(false);
+    console.log("Popup closed ", showPopup);
+  }
+
   return (
 <div
   id="popup-modal"
@@ -29,7 +38,7 @@ function Popup({ message, onClose }) {
           </h3>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleHidePopup}
             className="py-2.5 px-5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none cursor-pointer"
           >
             Close
